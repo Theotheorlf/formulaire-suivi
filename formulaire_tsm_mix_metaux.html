@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TSM Mix Métaux — Fiche de suivi</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:#F7F6F2;color:#1A1814;min-height:100vh;padding:32px 16px 80px}
+.page{max-width:820px;margin:0 auto}
+.eyebrow{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.12em;color:#8A8680;text-transform:uppercase;margin-bottom:6px}
+h1{font-size:26px;font-weight:600;letter-spacing:-.02em;margin-bottom:28px}
+h1 span{color:#854F0B}
+.card{background:#fff;border:1px solid #E2DED6;border-radius:12px;overflow:hidden;margin-bottom:16px}
+.card-header{padding:14px 22px;border-bottom:1px solid #E2DED6;background:#F7F6F2;display:flex;align-items:center;gap:9px}
+.card-header .dot{width:7px;height:7px;border-radius:50%;background:#854F0B;flex-shrink:0}
+.card-header h2{font-size:12px;font-weight:500;letter-spacing:.05em;color:#8A8680;text-transform:uppercase}
+.card-body{padding:22px}
+.meta-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.field{display:flex;flex-direction:column;gap:5px}
+.field label{font-size:11px;font-weight:500;letter-spacing:.05em;text-transform:uppercase;color:#8A8680}
+.field input,.field textarea{font-family:'DM Sans',sans-serif;font-size:14px;color:#1A1814;background:#FAFAF8;border:1px solid #E2DED6;border-radius:7px;padding:9px 12px;outline:none;width:100%;transition:border-color .15s}
+.field input:focus,.field textarea:focus{border-color:#854F0B;background:#FAEEDA}
+.field textarea{resize:vertical;min-height:68px}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+thead th{font-family:'DM Mono',monospace;font-size:10px;font-weight:500;letter-spacing:.07em;text-transform:uppercase;color:#8A8680;padding:10px 12px 8px;text-align:center;border-bottom:1px solid #E2DED6;background:#F7F6F2;white-space:nowrap}
+thead th:first-child{text-align:left;width:90px}
+tbody tr:nth-child(even){background:#FAFAF8}
+tbody tr:hover{background:#FAEEDA}
+tbody td{padding:2px 5px;border-bottom:1px solid #E2DED6;text-align:center}
+tbody td:first-child{font-family:'DM Mono',monospace;font-size:12px;font-weight:500;color:#8A8680;text-align:left;padding:5px 12px;white-space:nowrap}
+.num-input{font-family:'DM Mono',monospace;font-size:13px;color:#1A1814;background:transparent;border:1px solid transparent;border-radius:6px;padding:5px 8px;text-align:center;width:100%;outline:none;transition:border-color .12s,background .12s}
+.num-input::placeholder{color:#C8C2B8;font-size:12px}
+.num-input:hover{border-color:#E2DED6}
+.num-input:focus{border-color:#854F0B;background:#FAEEDA}
+.num-input.filled{font-weight:500}
+tfoot td{padding:10px 12px;font-family:'DM Mono',monospace;font-size:13px;font-weight:500;background:#633806;color:#fff;text-align:center;border:none}
+tfoot td:first-child{text-align:left;font-size:10px;letter-spacing:.1em;text-transform:uppercase;font-weight:600}
+tfoot td.zero{color:rgba(255,255,255,.3)}
+.send-bar{margin-top:24px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.btn-send{font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;padding:13px 36px;border-radius:9px;border:none;cursor:pointer;background:#633806;color:#fff;display:flex;align-items:center;gap:9px;transition:all .15s}
+.btn-send:hover{background:#854F0B;transform:translateY(-1px);box-shadow:0 4px 14px rgba(99,56,6,.3)}
+.btn-send:active{transform:translateY(0)}
+.btn-send:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
+.btn-reset{font-family:'DM Sans',sans-serif;font-size:13px;padding:10px 18px;border-radius:8px;border:1px solid #E2DED6;background:transparent;color:#8A8680;cursor:pointer;transition:all .15s}
+.btn-reset:hover{background:#F7F6F2;color:#1A1814}
+.status{display:none;align-items:center;padding:11px 16px;border-radius:8px;font-size:13px;font-weight:500;margin-top:12px}
+.status.ok{background:#EEF3E8;color:#2D5016;border:1px solid #C5D9AA;display:flex}
+.status.err{background:#FCEBEB;color:#A32D2D;border:1px solid #F7C1C1;display:flex}
+@media(max-width:560px){.meta-grid{grid-template-columns:1fr}body{padding:16px 10px 60px}h1{font-size:20px}.card-body{padding:14px}}
+</style>
+</head>
+<body>
+<div class="page">
+  <p class="eyebrow">Installation TSM</p>
+  <h1>Fiche de suivi — <span>Mix Métaux Brut</span></h1>
+
+  <div class="card">
+    <div class="card-header"><div class="dot"></div><h2>Informations générales</h2></div>
+    <div class="card-body">
+      <div class="meta-grid">
+        <div class="field"><label>Opérateur</label><input type="text" id="operateur" placeholder="Nom de l'opérateur" autocomplete="off"/></div>
+        <div class="field"><label>Date</label><input type="date" id="date_saisie"/></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><div class="dot"></div><h2>Relevé horaire</h2></div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Heure</th><th>Chargement TSM</th><th>Retour UTM</th><th>Retour Géraldine</th><th>Mix métaux final</th></tr></thead>
+        <tbody id="tbody"></tbody>
+        <tfoot><tr><td>Total</td><td class="zero" id="t0">—</td><td class="zero" id="t1">—</td><td class="zero" id="t2">—</td><td class="zero" id="t3">—</td></tr></tfoot>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><div class="dot"></div><h2>Observations</h2></div>
+    <div class="card-body">
+      <div class="field"><label>Observations / Remarques</label><textarea id="observations" placeholder="Saisir vos observations ici…"></textarea></div>
+    </div>
+  </div>
+
+  <div class="send-bar">
+    <button class="btn-send" id="btnSend" onclick="sendToSheet()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      Envoyer
+    </button>
+    <button class="btn-reset" onclick="resetForm()">Réinitialiser</button>
+  </div>
+  <div class="status" id="status"></div>
+</div>
+
+<script>
+const SHEET_URL = 'COLLER_URL_APPS_SCRIPT_ICI';
+const HEURES = ['6H','6H30','7H','7H30','8H','8H30','9H','9H30','10H','10H30','11H','11H30','12H','12H30','13H','13H30'];
+const NC = 4;
+
+document.getElementById('date_saisie').valueAsDate = new Date();
+
+const tbody = document.getElementById('tbody');
+HEURES.forEach((h,i) => {
+  const tr = document.createElement('tr');
+  let html = `<td>${h}</td>`;
+  for(let c=0;c<NC;c++) html += `<td><input class="num-input" type="text" inputmode="decimal" id="c${c}_${i}" placeholder="· · ·" autocomplete="off"/></td>`;
+  tr.innerHTML = html; tbody.appendChild(tr);
+});
+
+HEURES.forEach((_,i) => {
+  for(let c=0;c<NC;c++){
+    const inp = document.getElementById(`c${c}_${i}`);
+    inp.addEventListener('input', ()=>{ inp.value=inp.value.replace(/[^0-9.,]/g,''); updateTotals(); });
+    inp.addEventListener('blur', ()=>fmt(inp));
+    inp.addEventListener('keydown', e=>{ if(e.key==='Enter') inp.blur(); });
+  }
+});
+
+function fmt(inp){
+  let v=inp.value.trim();
+  if(!v){inp.value='';inp.classList.remove('filled');updateTotals();return;}
+  v=v.replace(',','.').replace(/^0+(\d)/,'$1');
+  const n=parseFloat(v);
+  if(!isNaN(n)&&n>=0){inp.value=n.toFixed(2);inp.classList.add('filled');}
+  else{inp.value='';inp.classList.remove('filled');}
+  updateTotals();
+}
+
+function gv(c,i){return parseFloat(document.getElementById(`c${c}_${i}`).value)||0;}
+
+function updateTotals(){
+  for(let c=0;c<NC;c++){
+    let s=0; HEURES.forEach((_,i)=>s+=gv(c,i));
+    const td=document.getElementById(`t${c}`);
+    if(s===0){td.textContent='—';td.classList.add('zero');}
+    else{td.textContent=s.toFixed(2);td.classList.remove('zero');}
+  }
+}
+
+async function sendToSheet(){
+  const op=document.getElementById('operateur').value.trim()||'Non renseigné';
+  const dt=document.getElementById('date_saisie').value;
+  const obs=document.getElementById('observations').value.trim();
+  const dateStr=dt?new Date(dt).toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric'}):'';
+  const now=new Date().toLocaleString('fr-FR');
+  const rows=[];
+  HEURES.forEach((h,i)=>{
+    const vals=[gv(0,i)||'',gv(1,i)||'',gv(2,i)||'',gv(3,i)||''];
+    if(vals.some(v=>v!=='')) rows.push([now,op,dateStr,h,...vals,i===0?obs:'']);
+  });
+  if(!rows.length){showStatus('err','Aucune donnée à envoyer.');return;}
+  const btn=document.getElementById('btnSend');
+  btn.disabled=true; btn.textContent='Envoi…';
+  try{
+    await fetch(SHEET_URL,{method:'POST',body:JSON.stringify({sheet:'TSM_Mix_Metaux',rows})});
+    showStatus('ok',`${rows.length} ligne(s) envoyée(s) avec succès.`);
+  }catch(e){showStatus('err','Erreur réseau. Vérifie l\'URL du script.');}
+  btn.disabled=false;
+  btn.innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Envoyer';
+}
+
+function resetForm(){
+  if(!confirm('Réinitialiser toutes les données ?'))return;
+  document.getElementById('operateur').value='';
+  document.getElementById('date_saisie').valueAsDate=new Date();
+  document.getElementById('observations').value='';
+  HEURES.forEach((_,i)=>{ for(let c=0;c<NC;c++){const inp=document.getElementById(`c${c}_${i}`);inp.value='';inp.classList.remove('filled');} });
+  updateTotals();
+}
+
+function showStatus(type,msg){
+  const el=document.getElementById('status');
+  el.className='status '+type; el.textContent=msg;
+  setTimeout(()=>el.className='status',6000);
+}
+</script>
+</body>
+</html>
