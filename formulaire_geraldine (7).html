@@ -144,34 +144,27 @@ function buildRows(){
   return rows;
 }
 
-function sendToSheet(){
-  const rows = buildRows();
-  if(!rows.length){showStatus('err','Aucune donnée à envoyer.');return;}
+function doPost(e) {
+  var id = "1yaci3ci-Uxoz_RQ4YVNsrA4od5MDAmAN1juwPw1W56E";
+  var ss = SpreadsheetApp.openById(id);
+  var sheet = ss.getSheetByName("Géraldine") || ss.getSheets()[0];
+  
+  try {
+    var payload = e.parameter.payload || e.postData.contents;
+    var data = JSON.parse(payload);
 
-  const btn=document.getElementById('btnSend');
-  btn.disabled=true;
-  btn.textContent='Envoi…';
-
-  // Méthode no-cors via iframe caché
-  const payload = JSON.stringify({sheet:'Geraldine', rows});
-  const form = document.createElement('form');
-  form.method = 'POST';
-  form.action = SHEET_URL;
-  form.target = 'hidden-iframe';
-  const input = document.createElement('input');
-  input.type = 'hidden';
-  input.name = 'payload';
-  input.value = payload;
-  form.appendChild(input);
-
-  let iframe = document.getElementById('hidden-iframe');
-  if(!iframe){
-    iframe = document.createElement('iframe');
-    iframe.name = 'hidden-iframe';
-    iframe.id = 'hidden-iframe';
-    iframe.style.display = 'none';
-    document.body.appendChild(iframe);
+    if (data.rows && data.rows.length > 0) {
+      data.rows.forEach(function(row) {
+        sheet.appendRow(row);
+      });
+      sheet.getRange("B1").setValue("Dernier succès : " + new Date().toLocaleString());
+    }
+    return ContentService.createTextOutput("OK");
+  } catch(err) {
+    sheet.appendRow([new Date(), "ERREUR", err.message]);
+    return ContentService.createTextOutput("Erreur");
   }
+}
 
   iframe.onload = function(){
     showStatus('ok', rows.length + ' ligne(s) envoyée(s) avec succès.');
