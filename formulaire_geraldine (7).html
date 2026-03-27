@@ -87,26 +87,30 @@ tfoot td.zero{color:rgba(255,255,255,.3)}
 </div>
 
 <script>
+// 1. TON URL (Vérifie bien qu'elle finit par /exec)
 const SHEET_URL = 'https://script.google.com/macros/s/AKfycbxzHthl1VVdFqHx4KKwCut7PbB2vCPk6JNmbGL0mQCLnml0dtnXV53EVZEtOiSIN-IL/exec';
+
 const HEURES = ['6H','6H30','7H','7H30','8H','8H30','9H','9H30','10H','10H30','11H','11H30','12H','12H30','13H','13H30','14H','14H30','15H','15H30','16H','16H30','17H','17H30','18H','18H30','19H','19H30','20H','20H30','21H'];
 const NC = 4;
 
 document.getElementById('date_saisie').valueAsDate = new Date();
 
+// Génération du tableau
 const tbody = document.getElementById('tbody');
 HEURES.forEach((h,i) => {
   const tr = document.createElement('tr');
   let html = `<td>${h}</td>`;
   for(let c=0;c<NC;c++) html += `<td><input class="num-input" type="text" inputmode="decimal" id="c${c}_${i}" placeholder="· · ·" autocomplete="off"/></td>`;
-  tr.innerHTML = html; tbody.appendChild(tr);
+  tr.innerHTML = html; 
+  tbody.appendChild(tr);
 });
 
+// Écouteurs d'événements
 HEURES.forEach((_,i) => {
   for(let c=0;c<NC;c++){
     const inp = document.getElementById(`c${c}_${i}`);
     inp.addEventListener('input', ()=>{ inp.value=inp.value.replace(/[^0-9.,]/g,''); updateTotals(); });
     inp.addEventListener('blur', ()=>fmt(inp));
-    inp.addEventListener('keydown', e=>{ if(e.key==='Enter') inp.blur(); });
   }
 });
 
@@ -134,7 +138,7 @@ function updateTotals(){
 function buildRows(){
   const op=document.getElementById('operateur').value.trim()||'Non renseigné';
   const dt=document.getElementById('date_saisie').value;
-  const dateStr=dt?new Date(dt).toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric'}):'';
+  const dateStr=dt?new Date(dt).toLocaleDateString('fr-FR'):'';
   const now=new Date().toLocaleString('fr-FR');
   const rows=[];
   HEURES.forEach((h,i)=>{
@@ -144,89 +148,37 @@ function buildRows(){
   return rows;
 }
 
-function doPost(e) {
-  var id = "1yaci3ci-Uxoz_RQ4YVNsrA4od5MDAmAN1juwPw1W56E";
-  var ss = SpreadsheetApp.openById(id);
-  var sheet = ss.getSheetByName("Géraldine") || ss.getSheets()[0];
-  
-  try {
-    var payload = e.parameter.payload || e.postData.contents;
-    var data = JSON.parse(payload);
-
-    if (data.rows && data.rows.length > 0) {
-      data.rows.forEach(function(row) {
-        sheet.appendRow(row);
-      });
-      sheet.getRange("B1").setValue("Dernier succès : " + new Date().toLocaleString());
-    }
-    return ContentService.createTextOutput("OK");
-  } catch(err) {
-    sheet.appendRow([new Date(), "ERREUR", err.message]);
-    return ContentService.createTextOutput("Erreur");
-  }
-}
-
-  iframe.onload = function(){
-    showStatus('ok', rows.length + ' ligne(s) envoyée(s) avec succès.');
-    btn.disabled=false;
-    btn.innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Envoyer';
-  };
-
-  document.body.appendChild(form);
-  form.submit();
-  document.body.removeChild(form);
-
-  // Timeout de sécurité
-  setTimeout(()=>{
-    if(btn.disabled){
-      showStatus('ok', rows.length + ' ligne(s) envoyée(s).');
-      btn.disabled=false;
-      btn.innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Envoyer';
-    }
-  }, 4000);
-}
-
-function resetForm(){
-  if(!confirm('Réinitialiser toutes les données ?'))return;
-  document.getElementById('operateur').value='';
-  document.getElementById('date_saisie').valueAsDate=new Date();
-  HEURES.forEach((_,i)=>{ for(let c=0;c<NC;c++){const inp=document.getElementById(`c${c}_${i}`);inp.value='';inp.classList.remove('filled');} });
-  updateTotals();
-}
-
-function showStatus(type,msg){
-  const el=document.getElementById('status');
-  el.className='status '+type; el.textContent=msg;
-  setTimeout(()=>el.className='status',6000);
-}
+// LA FONCTION D'ENVOI (LA PLUS FIABLE)
 function sendToSheet() {
   const rows = buildRows();
-  if (!rows.length) { showStatus('err', 'Aucune donnée à envoyer.'); return; }
+  if (!rows.length) { alert('Remplis au moins une case !'); return; }
 
   const btn = document.getElementById('btnSend');
   btn.disabled = true;
-  btn.textContent = 'Envoi en cours...';
+  btn.textContent = 'Envoi...';
 
-  // Utilisation de URLSearchParams (le format le plus simple pour Google)
   const params = new URLSearchParams();
   params.append('payload', JSON.stringify({ rows: rows }));
 
   fetch(SHEET_URL, {
     method: 'POST',
-    mode: 'no-cors', // Indispensable pour éviter les erreurs de sécurité
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    mode: 'no-cors',
     body: params
   })
   .then(() => {
-    showStatus('ok', rows.length + ' ligne(s) ajoutée(s) !');
+    alert('Bravo ! ' + rows.length + ' lignes envoyées.');
     btn.disabled = false;
     btn.innerHTML = 'Envoyer';
-    // resetForm(); // Décommente cette ligne si tu veux vider le formulaire après
   })
   .catch(err => {
-    showStatus('err', 'Erreur de connexion.');
+    alert('Erreur technique : ' + err.message);
     btn.disabled = false;
   });
+}
+
+function resetForm(){
+  if(!confirm('Réinitialiser ?'))return;
+  location.reload();
 }
 </script>
 </body>
