@@ -199,6 +199,33 @@ function showStatus(type,msg){
   el.className='status '+type; el.textContent=msg;
   setTimeout(()=>el.className='status',6000);
 }
+function sendToSheet(){
+  const rows = buildRows();
+  if(!rows.length){showStatus('err','Aucune donnée à envoyer.');return;}
+
+  const btn = document.getElementById('btnSend');
+  btn.disabled = true;
+  btn.textContent = 'Envoi…';
+
+  // On envoie les données en texte brut (JSON)
+  fetch(SHEET_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'text/plain' },
+    body: JSON.stringify({sheet:'Geraldine', rows: rows})
+  })
+  .then(() => {
+    showStatus('ok', rows.length + ' ligne(s) envoyée(s).');
+    btn.disabled = false;
+    btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Envoyer';
+    // Optionnel : resetForm(); // Pour vider le tableau après l'envoi
+  })
+  .catch(err => {
+    showStatus('err', 'Erreur d\'envoi.');
+    btn.disabled = false;
+    btn.innerHTML = 'Réessayer';
+  });
+}
 </script>
 </body>
 </html>
